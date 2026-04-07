@@ -1,0 +1,117 @@
+/* 全局样式 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+    background: #f0f7f0;
+    color: #2c3e2f;
+    line-height: 1.5;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* 头部 */
+.header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.header h1 {
+    font-size: 2rem;
+    color: #2c5e2a;
+    margin-bottom: 8px;
+}
+
+.subtitle {
+    font-size: 1rem;
+    color: #6b8c6b;
+}
+
+/* 视频区域 */
+.video-wrapper {
+    background: #000;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.video-feed {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* 控制面板 */
+.control-panel {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.control-group {
+    margin-bottom: 24px;
+}
+
+.control-group label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: #2c5e2a;
+}
+
+.control-group input[type="range"] {
+    width: 100%;
+    cursor: pointer;
+    background: #d4e2d4;
+    height: 4px;
+    border-radius: 2px;
+    -webkit-appearance: none;
+}
+
+.control-group input[type="range"]:focus {
+    outline: none;
+}
+
+.control-group input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #2c5e2a;
+    cursor: pointer;
+}
+
+.hint {
+    font-size: 0.8rem;
+    color: #7f8c8d;
+    margin-top: 5px;
+}
+
+.status {
+    text-align: center;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #e0e8e0;
+    font-size: 0.9rem;
+    color: #4a6e4a;
+}
+
+/* 底部 */
+.footer {
+    text-align: center;
+    margin-top: 30px;
+    color: #8ba88b;
+    font-size: 0.8rem;
+    border-top: 1px solid #d0e0d0;
+    padding-top: 20px;
+}

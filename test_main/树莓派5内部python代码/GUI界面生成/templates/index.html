@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>YOLOv5 害虫识别与舵机控制</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>🌾 YOLOv5 害虫识别 · 双舵机控制</h1>
+        <p class="subtitle">实时视频流 | 动态阈值 | 精准控制</p>
+    </div>
+
+    <div class="video-wrapper">
+        <img id="videoFeed" src="/video_feed" alt="Video Stream" class="video-feed">
+    </div>
+
+    <div class="control-panel">
+        <!-- 置信度阈值 -->
+        <div class="control-group">
+            <label>🎯 置信度阈值：<span id="confValue">0.25</span></label>
+            <input type="range" id="confSlider" min="0" max="100" step="1" value="25">
+            <p class="hint">值越高，检测越严格（减少误报）</p>
+        </div>
+
+        <!-- 舵机0 -->
+        <div class="control-group">
+            <label>🤖 舵机0角度：<span id="servo0Value">0</span>°</label>
+            <input type="range" id="servo0Slider" min="0" max="180" step="1" value="0">
+        </div>
+
+        <!-- 舵机1 -->
+        <div class="control-group">
+            <label>🤖 舵机1角度：<span id="servo1Value">0</span>°</label>
+            <input type="range" id="servo1Slider" min="0" max="180" step="1" value="0">
+        </div>
+
+        <!-- 系统状态 -->
+        <div class="status">
+            <span>📊 实时帧率：<span id="fps">--</span> FPS</span>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>视频流为 MJPEG 格式 | 后端服务运行于树莓派</p>
+    </div>
+</div>
+
+<script>
+    // DOM 元素
+    const confSlider = document.getElementById('confSlider');
+    const confValue = document.getElementById('confValue');
+    const servo0Slider = document.getElementById('servo0Slider');
+    const servo1Slider = document.getElementById('servo1Slider');
+    const servo0Value = document.getElementById('servo0Value');
+    const servo1Value = document.getElementById('servo1Value');
+    const fpsSpan = document.getElementById('fps');
+
+    // 置信度阈值变化
+    confSlider.addEventListener('input', (e) => {
+        const val = parseInt(e.target.value);
+        const threshold = val / 100;
+        confValue.innerText = threshold.toFixed(2);
+        setConfidence(threshold);
+    });
+
+    // 舵机0角度变化
+    servo0Slider.addEventListener('input', (e) => {
+        const angle = parseInt(e.target.value);
+        servo0Value.innerText = angle;
+        setServo(0, angle);
+    });
+
+    // 舵机1角度变化
+    servo1Slider.addEventListener('input', (e) => {
+        const angle = parseInt(e.target.value);
+        servo1Value.innerText = angle;
+        setServo(1, angle);
+    });
+
+    // 设置置信度阈值
+    async function setConfidence(threshold) {
+        try {
+            const response = await fetch('/api/conf_thres', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ value: threshold })
+            });
+            if (!response.ok) throw new Error('网络错误');
+            const data = await response.json();
+            if (data.status !== 'ok') console.warn('设置阈值失败:', data.error);
+        } catch (err) {
+            console.error('设置阈值失败:', err);
+        }
+    }
+
+    // 控制舵机
+    async function setServo(channel, angle) {
+        try {
+            const response = await fetch('/api/servo', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ channel, angle })
+            });
+            if (!response.ok) throw new Error('网络错误');
+            const data = await response.json();
+            if (data.status !== 'ok') console.warn(`舵机${channel}控制失败:`, data.error);
+        } catch (err) {
+            console.error(`舵机${channel}控制失败:`, err);
+        }
+    }
+
+    // 获取实时帧率
+    async function fetchFPS() {
+        try {
+            const response = await fetch('/api/status');
+            if (!response.ok) throw new Error('网络错误');
+            const data = await response.json();
+            if (data.fps !== undefined) fpsSpan.innerText = data.fps.toFixed(1);
+        } catch (err) {
+            console.error('获取帧率失败:', err);
+        }
+    }
+
+    // 每隔2秒刷新一次帧率
+    setInterval(fetchFPS, 2000);
+    fetchFPS(); // 立即加载一次
+</script>
+</body>
+</html>
